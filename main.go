@@ -50,7 +50,9 @@ func main() {
 	}
 
 	mux := setupHTTPHandler(ctx, client, configs, env.WebhookSecret, logger)
-	http.ListenAndServe(":8080", mux)
+	if err := http.ListenAndServe(":8080", mux); err != nil {
+		logger.Error("failed to start server", "error", err)
+	}
 }
 
 func loadEnvVars() (*EnvVars, error) {
@@ -203,7 +205,11 @@ func (a *Action) verifyDependabot(ctx context.Context, event *github.PullRequest
 		return nil
 	}
 
-	commits, _, err := a.client.PullRequests.ListCommits(ctx, event.GetRepo().GetOwner().GetLogin(), event.GetRepo().GetName(), pr.GetNumber(), nil)
+	repoOwner := event.GetRepo().GetOwner().GetLogin()
+	repoName := event.GetRepo().GetName()
+	prNumber := pr.GetNumber()
+
+	commits, _, err := a.client.PullRequests.ListCommits(ctx, repoOwner, repoName, prNumber, nil)
 	if err != nil {
 		return err
 	}
@@ -224,6 +230,7 @@ func (a *Action) verifyChecks(ctx context.Context, event *github.PullRequestEven
 
 	repoOwner := event.GetRepo().GetOwner().GetLogin()
 	repoName := event.GetRepo().GetName()
+
 	const interval = 10 * time.Second
 	const maxAttempts = 12
 

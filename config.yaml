@@ -1,0 +1,3 @@
+- repository: dependabot-automerge
+  autoapprove: true
+  automerge: true

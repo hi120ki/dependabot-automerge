@@ -25,6 +25,21 @@ The `config.yml` can be configured as follows:
   automerge: true
 ```
 
+## Deployment
+
+Prepare the following 2 environment variables:
+
+- `USER_TOKEN`: GitHub Personal Access Token (PAT) with the `repo` scope.
+- `WEBHOOK_SECRET`: GitHub webhook secret.
+
+Then, deploy the service to the server with the following command:
+
+```sh
+$ docker compose up -d
+```
+
+The service will be available at `http://<host>:8080`, and the webhook endpoint will be `http://<host>:8080/event`.
+
 ## License
 
 MIT
